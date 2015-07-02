@@ -1,2 +1,2 @@
 # InteractiveText-CS
-TextAdventure
+Text Adventure, written in C#
