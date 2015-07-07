@@ -1,0 +1,10 @@
+﻿Verbs for object
+Contct Gardener for bedding and grass seed
+Desire to be recognized and appreciated by social circle
+
+The "player character" is responsible for
+* Personal information 
+* Navigation
+* Inventory management
+* Tracking movement
+* Providing context, such as what is going on, and how to react appropriately
