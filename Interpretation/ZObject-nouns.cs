@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-partial class ZObject : ZRoot
+partial class ZObject : IMatch<object>
 {
    /// <summary>
    /// The nouns associated with this object
@@ -12,34 +12,7 @@ partial class ZObject : ZRoot
    /// <summary>
    /// The modifiers associated with this object
    /// </summary>
-   public WordList modifiers;
-
-   /// <summary>
-   /// Finds the object that best directly matches the phrase.
-   /// 
-   /// This naively finds the single best match.  Future is to return a list
-   /// </summary>
-   /// <param name="lexer">The text being matched</param>
-   /// <param name="numWordsMatch">The number of words that match [out]</param>
-   /// <returns>The object that matches; null on error</returns>
-   internal ZObject matchInContext(Lexer lexer, out int numWordsMatch,
-                          ref LexState lexerState)
-   {
-      var seen = new Dictionary<ZRoot,object>();
-
-      // The score board for the search
-      var score = 0.0;
-      numWordsMatch = 1; // Minimum number of words to match
-      ZObject bestMatch = null;
-
-      // Search for the best item within self, children and parents
-      matchInContext(lexer, ref score, ref numWordsMatch, ref bestMatch,
-                     ref lexerState, seen);
-
-      // Return the best match
-      return bestMatch;
-   }
-
+   public readonly WordList modifiers;
 
    /// <summary>
    /// Finds the object that best matches the phrase
@@ -49,39 +22,10 @@ partial class ZObject : ZRoot
    /// <param name="numWordsMatch">The number of words that match [out]</param>
    /// <param name="bestMatch">The object that best matches [out]</param>
    /// <param name="seen">Set of objects already examined</param>
-   internal virtual void matchInContext(Lexer lexer, 
-               ref double score, ref int numWordsMatch,
-               ref ZObject bestMatch,
-               ref LexState lexerState, Dictionary<ZRoot,object> seen)
-   {
-      var state = lexer.Save();
-      // Search for the best item within self and children
-      match(lexer, ref score, ref numWordsMatch, ref bestMatch, ref lexerState, seen);
-
-      // bump the search to parents and their children
-      if (null != Parent)
-      {
-         lexer.Restore(state);
-         //TODO: Bump the score to keep things closer to ourselves ?
-         Parent.matchInContext(lexer, ref score, ref numWordsMatch,
-                                 ref bestMatch, ref lexerState, seen);
-      }
-   }
-
-
-   
-   /// <summary>
-   /// Finds the object that best matches the phrase
-   /// </summary>
-   /// <param name="lexer">The text being matched</param>
-   /// <param name="score">The score for the best match: 0 if no match[out]</param>
-   /// <param name="numWordsMatch">The number of words that match [out]</param>
-   /// <param name="bestMatch">The object that best matches [out]</param>
-   /// <param name="seen">Set of objects already examined</param>
-   internal void match(Lexer lexer, ref double score,
+   public void match(Lexer lexer, ref double score,
                ref int numWordsMatch,
-               ref ZObject bestMatch,
-               ref LexState lexerState, Dictionary<ZRoot,object> seen)
+               ref object bestMatch,
+               ref LexState lexerState, Dictionary<object,object> seen)
    {
       // Skip if we've already seen this object
       if (seen.ContainsKey(this))

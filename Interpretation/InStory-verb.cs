@@ -9,10 +9,10 @@ public partial class InStory
    /// </summary>
    /// <param name="nouns"></param>
    /// <param name="items">The direct objects,  indirect objects, and other noun phrase</param>
-   /// <param name="line">The line number it was invoked</param>
+   /// <param name="src">The file and line number it was invoked</param>
    /// <param name="err">Where to place any descriptive error messages</param>
    /// <returns>True if was able interpret (it was sensible, even though can't be don), or false if not syntactically sensible</returns>
-   delegate bool dStatement(propositionContext context, List<ZObject> Items, int line, Err err);
+   delegate bool dStatement(propositionContext context, List<object> Items, SrcInFile src, Err err);
 
 
    /// <summary>
