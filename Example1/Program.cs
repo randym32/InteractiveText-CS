@@ -22,7 +22,7 @@ class Program
       room1.AddChild(pc);
 
       // Create an object
-      var tmp = InStory.Object();
+      var tmp = story.Object();
       tmp.shortDescription = "my thing";
 
       // Give it to the player
@@ -34,6 +34,9 @@ class Program
       // Go to other room
       story.interp("go to anteroom");
       story.interp("go east");
+      story.interp("west");
+      story.interp("south");
+
 
       // Drop -- but don't say what
       story.interp("drop");
@@ -49,6 +52,9 @@ class Program
 
       // Pick up thing
       story.interp("get thing");
+      // Try to pick up room
+      story.interp("get anteroom");
+      story.interp("get west");
 
       // Print an inventory
       story.interp("list");
