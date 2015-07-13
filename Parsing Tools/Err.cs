@@ -75,10 +75,11 @@ class Err
    /// <summary>
    /// A helper to create a link to the original source or description within
    /// </summary>
-   /// <param name="Line">The line number it was defined at</param>
-   internal void linkTo(int Line)
+   /// <param name="link">The file & line number it was defined at</param>
+   internal void linkTo(SrcInFile link)
    {
-      _linkTo(this, Line);
+      // Call the link delegate
+      _linkTo(this, link . line);
    }
 
    string ToBe(object NP)
@@ -93,11 +94,19 @@ class Err
    /// <param name="v"></param>
    /// <param name="srcLine"></param>
    /// <returns>false</returns>
-   internal bool IsAlready(object x, object v, int srcLine)
+   internal bool IsAlready(object x, object v, SrcInFile srcLine)
    {
       linkTo(srcLine);
       SB . AppendFormat("{0} {1} {2}.  ",
             x, ToBe(x), v);
       return false;
    }
+#if false
+            err . SB . AppendFormat("The '{0}' is ", _subject);
+            err . linkTo(line);
+            err . SB . Append("being declared</a> but was ");
+            err . linkTo(subb . definedAtLine);
+            err . SB . Append("already declared earlier.</a>");
+#endif
+
 }

@@ -34,6 +34,11 @@ class LexState
       this . LineStartIdx= lineStartIdx;
    }
 
+   /// <summary>
+   /// Determines whether or not "obj" is equal to this object
+   /// </summary>
+   /// <param name="obj">An object to compare against</param>
+   /// <returns>True if they are the same</returns>
    public override bool Equals(object obj)
    {
       if (this == obj)
@@ -62,7 +67,7 @@ public partial class Lexer
    /// <summary>
    ///  The string being parsed
    /// </summary>
-   string Str;
+   internal readonly string Str;
 
    /// <summary>
    /// An array of characters
