@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Text;
 
 class propositionContext
@@ -12,91 +11,48 @@ public partial class InStory
    /// The object that is proxy for / represents the player within the
    /// game world
    /// </summary>
-   public readonly IObject player =  new ZObject(newName());
+   public readonly IObject player;
 
    /// <summary>
    /// The constructor
    /// </summary>
    public InStory()
    {
+      initRelations();
+      player =  Person();
       player.shortDescription = "you";
       initPlayerCharacter();
    }
 
+
+   /// <summary>
+   /// Transitively links the two space cells togehter
+   /// </summary>
+   /// <param name="direction"></param>
+   /// <param name="a"></param>
+   /// <param name="b"></param>
+   internal void inDirection(ZObject direction, ZObject a, ZObject b)
+   {
+      ((SparseGraph<ZObject>)relations[direction]).After(a, new Edge<ZObject>(b, null));
+      List<Edge<ZObject>> edges;
+      if (((SparseGraph<ZObject>)relations[opposite]).successors(direction, out edges))
+      {
+         var opEdge = new Edge<ZObject>(a, null);
+         foreach (var op in edges)
+            ((SparseGraph<ZObject>)relations[op.sink]).After(b, opEdge);
+      }
+   }
    /// <summary>
    /// b is west of a
    /// </summary>
    /// <param name="a"></param>
    /// <param name="b"></param>
-   public void westOf(ICell a, ICell b)
+   public void westOf(IObject a, IObject b)
    {
-      ((ZCell)a).edgeInDirection["west"] = new ZEdge(newName(), (ZCell) b, null);
-      ((ZCell)b).edgeInDirection[east] = new ZEdge(newName(), (ZCell) a, null);
+      inDirection(west, (ZObject)a, (ZObject) b);
    }
 
 
-   #region Internal names
-   /// <summary>
-   /// Unless a name was given, we "uniquely" name each object with a number
-   /// </summary>
-   static int nameInt=0;
-
-   /// <summary>
-   /// Creates a "unique" name for each object
-   /// </summary>
-   /// <returns>The new name</returns>
-   static string newName()
-   {
-      return Interlocked.Add(ref nameInt, 1).ToString();
-   }
-   #endregion
-
-   #region Basic Entity Types
-   /// <summary>
-   /// Creates an object that can hold stuff and links to other such
-   /// objects in a direction
-   /// </summary>
-   /// <returns>The new object</returns>
-   public ICell Cell()
-   {
-      // Create the object with an internal name
-      return Cell(newName());
-   }
-
-   /// <summary>
-   /// Creates an object that can hold stuff and links to other such
-   /// objects in a direction
-   /// </summary>
-   /// <param name="name">The internal name</param>
-   /// <returns>The new object</returns>
-   public ICell Cell(object name)
-   {
-      // Create the object with the givne name
-      var ret = new ZCell(name);
-      // Claim that it is a room
-      //_isa.assert(roomKind, ret, 0, null);
-      return ret;
-   }
-
-   /// <summary>
-   /// Creates an object that can hold stuff
-   /// </summary>
-   /// <returns>The new object</returns>
-   public static IObject Object()
-   {
-      return Object(newName());
-   }
-
-   /// <summary>
-   /// Creates an object that can hold stuff
-   /// </summary>
-   /// <param name="name">The internal name</param>
-   /// <returns>The new object</returns>
-   public static IObject Object(object name)
-   {
-      return new ZObject(name);
-   }
-   #endregion
 
 
    #region Storage
@@ -106,7 +62,7 @@ public partial class InStory
    /// <returns>String version (JSON) of the world</returns>
    public StringBuilder toJSON()
    {
-      return ZNormalForm.JSONSerialize((ZObject) player);
+      return ZNormalForm.JSONSerialize(this);
    }
 
 
@@ -115,9 +71,17 @@ public partial class InStory
    /// </summary>
    /// <param name="json"></param>
    /// <returns>null on error, otherwise the object that</returns>
-   public static IObject fromJSON(string json)
+   public static InStory fromJSON(string json)
    {
-      return ZNormalForm.JSONDeserialize(json);
+      // Get the normal form from the string
+      return new InStory(ZNormalForm.JSONDeserialize(json));
+   }
+   InStory(ZNormalForm from)
+      :this()
+   {
+      // Convert back into an operational form
+      player = from.Objects(this);
+      relations = from.Relations();
    }
    #endregion
 
