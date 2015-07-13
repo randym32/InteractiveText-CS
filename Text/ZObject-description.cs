@@ -1,6 +1,7 @@
 ﻿// 2015-Jun-22
 using System;
-partial class ZObject : ZRoot
+
+partial class ZObject
 {
    #region Descriptions
    

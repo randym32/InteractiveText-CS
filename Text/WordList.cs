@@ -18,12 +18,17 @@ partial class WordList
    /// This creates a list of words that are expected to act as a group
    /// </summary>
    /// <param name="words">The list of words</param>
-   internal WordList(string[] words)
+   public WordList(string[] words)
    {
       this . words = words;
    }
+   public WordList(List<string> words)
+   {
+      this.words = words.ToArray();
+   }
 
-      /// <summary>
+
+   /// <summary>
    /// This creates a list of words that are expected to act as a group
    /// </summary>
    /// <param name="words">The list of words</param>
@@ -32,6 +37,22 @@ partial class WordList
       // Create the object
       return new WordList(words.ToArray());
    }
+
+   /// <summary>
+   /// This creates a list of words that are expected to act as a group
+   /// </summary>
+   /// <param name="words">The list of words</param>
+   public static implicit operator WordList(object[] objects)
+   {
+      var L = objects.Length;
+      var words = new string[L];
+      for (var Idx = 0; Idx < L; Idx++)
+         words[Idx] = objects[Idx].ToString();
+
+      // Create the object
+      return new WordList(words);
+   }
+
 
    /// <summary>
    /// This makes it easy to pass a string as an argument to things,
@@ -113,9 +134,9 @@ partial class WordList
 
 
    /// <summary>
-   /// Determines whether or not B is equal to this object
+   /// Determines whether or not "a" is equal to this object
    /// </summary>
-   /// <param name="B">An object to compare against</param>
+   /// <param name="a">An object to compare against</param>
    /// <returns>True if they are the same</returns>
    public override bool Equals(object a)
    {
